@@ -25,8 +25,10 @@ else if (nivel === 'chucknorris') {
 }
 
 function ajustaTamanhoPalcoJogo() {
+
 	altura = window.innerHeight
 	largura = window.innerWidth
+
 }
 
 ajustaTamanhoPalcoJogo()
@@ -64,6 +66,10 @@ function posicaoRandomica() {
 
 		if (vidas > 3) {
 
+			pontuacaoFinal = mosquitosCapturados * 10
+
+			gerarRelatorio()
+
 			window.location.href = 'fim_de_jogo.html'
 
 		} else {
@@ -93,6 +99,7 @@ function posicaoRandomica() {
 	mosquito.onclick = function () {
 
 		mosquitosCapturados++
+
 		this.remove()
 
 	}
@@ -154,11 +161,12 @@ function gerarRelatorio() {
 
 Aluno: ${localStorage.getItem("aluno")}
 RA: ${localStorage.getItem("ra")}
+Ano: ${localStorage.getItem("ano")}
+Turma: ${localStorage.getItem("turma")}
 Data: ${new Date().toLocaleString()}
 
 Mosquitos capturados: ${mosquitosCapturados}
 Dificuldade: ${nivel.toUpperCase()}
-Aproveitamento: 100%
 Tempo de Jogo: ${tempoFormatado}
 Pontuação final: ${pontuacaoFinal} pontos
 
@@ -167,30 +175,36 @@ Pontuação final: ${pontuacaoFinal} pontos
 
 	console.log(relatorio)
 
-	enviarRelatorioAPI()
+	enviarRelatorioAPI(tempoTotal)
 
 }
 
-function enviarRelatorioAPI() {
+function enviarRelatorioAPI(tempoTotal) {
 
 	let dados = {
 
 		aluno: localStorage.getItem("aluno"),
 		ra: localStorage.getItem("ra"),
+		ano: localStorage.getItem("ano"),
+		turma: localStorage.getItem("turma"),
 		jogo: "mata_mosquito",
 		dificuldade: nivel,
-		mosquitos: mosquitosCapturados,
+		acertos: mosquitosCapturados,
+		erros: 0,
+		tempo_total: tempoTotal,
 		pontuacao: pontuacaoFinal,
-		data: new Date().toISOString()
+		data_execucao: new Date().toISOString()
 
 	}
 
 	fetch("http://127.0.0.1:8000/api/client/sessoes/", {
 
 		method: "POST",
+
 		headers: {
 			"Content-Type": "application/json"
 		},
+
 		body: JSON.stringify(dados)
 
 	})
